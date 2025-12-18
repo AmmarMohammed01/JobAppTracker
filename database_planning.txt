@@ -1,0 +1,4 @@
+12/17/2025
+How will the database be structured?
+
+Company name, Date Applied, Platform (Handshake, LinkedIn), Job Position, URL, Notes
