@@ -1,6 +1,6 @@
 async function getMessage() {
 	try {
-		const response = await fetch('http://127.0.0.1:8000/get-message');
+		const response = await fetch('http://127.0.0.1:8000/api/starters/get-message');
 
 		// Check if the status is in the 200-299 range
 		if (!response.ok) {

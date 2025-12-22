@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-@app.get("/get-message")
+@app.get("/api/starters/get-message")
 async def read_root():
     print("Request received, waiting 5 seconds")
     await asyncio.sleep(5)
