@@ -1,9 +1,39 @@
+show databases;
+
 CREATE DATABASE JOB_APP;
+
+use JOB_APP;
+
+-- INFO QUERIES START
+
+select * from information_schema.tables where table_schema = 'JOB_APP' order by create_time asc;
+select TABLE_SCHEMA, TABLE_NAME, TABLE_ROWS, CREATE_TIME from information_schema.tables where table_schema = 'JOB_APP' order by create_time asc;
+select * from information_schema.columns where table_schema = 'JOB_APP'; -- use to check if datatypes for person table updated.
+-- Returns number of tables
+select count(*) from information_schema.tables 
+where table_schema = 'JOB_APP';
+
+-- Check constraint types
+SELECT 
+    CONSTRAINT_NAME,
+    TABLE_NAME,
+    CONSTRAINT_TYPE
+FROM 
+    information_schema.TABLE_CONSTRAINTS
+WHERE 
+    TABLE_SCHEMA = 'JOB_APP';
+    
+-- INFO QUERIES END
 
 CREATE TABLE POTENTIAL_EMPLOYEE(
 	PotEmp_ID		INT PRIMARY KEY AUTO_INCREMENT,
 	PotEmpUsername		VARCHAR(20),
 	PotEmpPassword		VARCHAR(20)
+);
+
+CREATE TABLE COMPANY(
+	Company_ID		INT PRIMARY KEY AUTO_INCREMENT,
+	CompanyName		VARCHAR(100)
 );
 
 CREATE TABLE JOB_APPLYING_ACCOUNT(
@@ -17,11 +47,6 @@ CREATE TABLE JOB_APPLYING_ACCOUNT(
 	PRIMARY KEY (JAA_ID), -- Should this include PotEmpID
 	FOREIGN KEY (PotEmp_ID) REFERENCES POTENTIAL_EMPLOYEE(PotEmp_ID) ON DELETE CASCADE,
 	FOREIGN KEY (Company_ID) REFERENCES COMPANY(Company_ID) ON DELETE CASCADE
-);
-
-CREATE TABLE COMPANY(
-	Company_ID		INT PRIMARY KEY AUTO_INCREMENT,
-	CompanyName		VARCHAR(100)
 );
 
 CREATE TABLE JOB(
@@ -64,5 +89,3 @@ CREATE TABLE URLS(
 
 	FOREIGN KEY (Job_ID) REFERENCES JOB(Job_ID) ON DELETE CASCADE
 );
-
-
