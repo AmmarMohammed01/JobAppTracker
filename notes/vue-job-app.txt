@@ -1,0 +1,12 @@
+Add job:
+job type: internship, fulltime, parttime, remote
+Job Listing Name
+Description
+Salary
+Location
+
+COMPANY INFO
+Comapny Name
+Company Description
+Contact Email
+Contact Phone
