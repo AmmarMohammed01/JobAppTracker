@@ -3,7 +3,7 @@ https://blog.postman.com/how-to-build-an-api-in-python/
 Localhost:8000/get-message
 """
 from typing import Annotated
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from mysql.connector import pooling
 from dotenv import load_dotenv
@@ -12,6 +12,9 @@ import os
 from pydantic import BaseModel
 
 from security import hash_password, verify_password
+
+from auth import create_access_token, get_current_user
+from datetime import timedelta
 
 class UsernameChecker(BaseModel):
     username: str
@@ -52,12 +55,6 @@ async def read_root():
 @app.get("/get-message")
 async def read_root():
     return {"Message": "Congrats! This is your first FastAPI!"}
-
-
-@app.get("/api/account/create")
-async def accountcreate():
-    return {}
-
 
 @app.post("/api/account/username-availability")
 async def accountCheckUsernameAvailable(username: UsernameChecker):
@@ -110,38 +107,40 @@ async def accountCreate(account: AccountInfo):
 
 @app.post("/api/account/signin")
 async def accountSignin(account: AccountInfo):
-    signin_success = False
     try:
         conn = pool.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # hashed_password = hash_password(str(account.password))
-        # print(hashed_password)
-        # sql = "SELECT * FROM POTENTIAL_EMPLOYEE" # CASE 1
-        sql = "SELECT * FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername=%s" # CASE 2
-        # sql = "SELECT * FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername=%s AND PotEmpPassword=%s" # CASE 3
+        sql = "SELECT * FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername=%s"
+        cursor.execute(sql, (account.username,))
 
-        # cursor.execute(sql) # CASE 1
-        cursor.execute(sql, (account.username,)) # CASE 2
-        # cursor.execute(sql, (account.username, hashed_password,)) # CASE 3
+        user = cursor.fetchone()
 
-        result = cursor.fetchall()
+        if not user or not verify_password(account.password, user['PotEmpPassword']):
+            return {"detail": "Invalid credentials"}
 
-        # print(result)
-        # print(result[0].keys())
-        # print(result[0]['PotEmpPassword'])
-        is_verified = verify_password(account.password, result[0]['PotEmpPassword'])
-
-        # signin_success = result is not None
-        signin_success = is_verified
+        token = create_access_token(
+            data={
+                "user_id": user["PotEmp_ID"],
+                "username": account.username
+            }
+        )
 
         cursor.close()
         conn.close()
 
         return {
-            "signin_success": signin_success
+            "access_token": token,
+            "token_type": "bearer"
         }
 
     except Exception as e:
         e.add_note("Error Occured When Signing In")
         raise
+
+@app.get("/api/protected-example")
+async def protected_example(current_user=Depends(get_current_user)):
+    return {
+        "message": "You are authenticated",
+        "user": current_user
+    }
