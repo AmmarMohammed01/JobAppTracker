@@ -2,3 +2,7 @@ pip install fastapi
 pip install uvicorn
 
 uvicorn main:app --reload
+
+pip install mysql-connector-python
+pip install python-dotenv //https://pypi.org/project/python-dotenv/
+

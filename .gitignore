@@ -2,3 +2,6 @@
 __pycache__
 .$jobapp-db-diagram.drawio.bkp
 notes/hidden
+
+.env
+.DS_Store
