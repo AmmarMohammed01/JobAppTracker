@@ -11,7 +11,7 @@ import os
 
 from pydantic import BaseModel
 
-from security import hash_password
+from security import hash_password, verify_password
 
 class UsernameChecker(BaseModel):
     username: str
@@ -101,10 +101,47 @@ async def accountCreate(account: AccountInfo):
 
     except Exception as e:
         e.add_note("Error Occured in Creating User")
-        # e.add_note(f"Username: {account.username}, Password: {account.password}")
         raise
 
 
     return {
         "account_created_success": account_created_success
     }
+
+@app.post("/api/account/signin")
+async def accountSignin(account: AccountInfo):
+    signin_success = False
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # hashed_password = hash_password(str(account.password))
+        # print(hashed_password)
+        # sql = "SELECT * FROM POTENTIAL_EMPLOYEE" # CASE 1
+        sql = "SELECT * FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername=%s" # CASE 2
+        # sql = "SELECT * FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername=%s AND PotEmpPassword=%s" # CASE 3
+
+        # cursor.execute(sql) # CASE 1
+        cursor.execute(sql, (account.username,)) # CASE 2
+        # cursor.execute(sql, (account.username, hashed_password,)) # CASE 3
+
+        result = cursor.fetchall()
+
+        # print(result)
+        # print(result[0].keys())
+        # print(result[0]['PotEmpPassword'])
+        is_verified = verify_password(account.password, result[0]['PotEmpPassword'])
+
+        # signin_success = result is not None
+        signin_success = is_verified
+
+        cursor.close()
+        conn.close()
+
+        return {
+            "signin_success": signin_success
+        }
+
+    except Exception as e:
+        e.add_note("Error Occured When Signing In")
+        raise
