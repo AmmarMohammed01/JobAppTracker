@@ -11,8 +11,14 @@ import os
 
 from pydantic import BaseModel
 
+from security import hash_password
+
 class UsernameChecker(BaseModel):
     username: str
+
+class AccountInfo(BaseModel):
+    username: str
+    password: str
 
 load_dotenv()
 
@@ -69,5 +75,36 @@ async def accountCheckUsernameAvailable(username: UsernameChecker):
     print(result)
 
     return {
-        "exists": result is not None
+        "available": result is None
+    }
+
+
+@app.post("/api/account/create")
+async def accountCreate(account: AccountInfo):
+    account_created_success = False
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # print(type(account.password))
+        # print(len(account.password))
+        hashed_password = hash_password(str(account.password))
+        sql = "INSERT INTO POTENTIAL_EMPLOYEE (PotEmpUsername, PotEmpPassword) VALUES (%s, %s)"
+
+        cursor.execute(sql, (account.username, hashed_password,))
+        conn.commit() # MUST COMMIT TO SAVE CHANGES
+
+        cursor.close()
+        conn.close()
+
+        account_created_success = True
+
+    except Exception as e:
+        e.add_note("Error Occured in Creating User")
+        # e.add_note(f"Username: {account.username}, Password: {account.password}")
+        raise
+
+
+    return {
+        "account_created_success": account_created_success
     }

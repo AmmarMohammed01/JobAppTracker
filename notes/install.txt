@@ -6,3 +6,6 @@ uvicorn main:app --reload
 pip install mysql-connector-python
 pip install python-dotenv //https://pypi.org/project/python-dotenv/
 
+pip uninstall bcrypt -y
+pip install "bcrypt<4"
+pip install "passlib[bcrypt]"
