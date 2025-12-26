@@ -17,14 +17,14 @@ class UsernameChecker(BaseModel):
 load_dotenv()
 
 dbconfig = {
-    "host": os.getenv('HOST'),
-    "user": os.getenv('USER'),
-    "password": os.getenv('PASSWORD'),
-    "database": os.getenv('DATABASE'),
+    "host": os.getenv('DB_HOST'),
+    "user": os.getenv('DB_USER'),
+    "password": os.getenv('DB_PASSWORD'),
+    "database": os.getenv('DB_NAME'),
 
 }
 
-# pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=5, **dbconfig)
+pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=5, **dbconfig)
 
 app = FastAPI()
 
@@ -54,22 +54,20 @@ async def accountcreate():
 
 
 @app.post("/api/account/username-availability")
-# username : Annotated[str, Body()]
 async def accountCheckUsernameAvailable(username: UsernameChecker):
-    # conn = pool.get_connection()
+    conn = pool.get_connection()
+    cursor = conn.cursor(dictionary=True)
 
-    sql = "SELECT * FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername='%s'"
+    sql = "SELECT 1 FROM POTENTIAL_EMPLOYEE WHERE PotEmpUsername=%s"
     print(username)
-    condition = username
 
-    # conn.execute(sql, condition)
-    
-    # result = conn.fetchall()
+    cursor.execute(sql, (username.username,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
 
-    '''
-    for x in result:
-        print(x)
-    '''
+    print(result)
 
-    # conn.close()
-    return {}
+    return {
+        "exists": result is not None
+    }
