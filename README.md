@@ -1,6 +1,6 @@
 # Job Application Tracker
 ## 👔 About
-A full-stack application to help the user keep track of the jobs they apply to.
+A full-stack application to help users keep track of the jobs they apply to.
 
 ## 🖥️ Technologies Used
 - Frontend: HTML/CSS/JavaScript
@@ -33,15 +33,30 @@ A full-stack application to help the user keep track of the jobs they apply to.
 - How to use FastAPI
 
 ## 🚀 How To Run The Project
-'''bash
+```bash
 source .venv/bin/activate
 uvicorn main:app --reload # Starts up the backend to connect to the APIs
 # Running on localhost:8000
+```
 
-'''
 Live Server - VSCode<br>
 - Running on localhost:5500
 - This is being used to load up the frontend
+
+Database
+- Used MySQL Workbench to create and run the database queries
+- Populate .env file with the following
+
+```
+# For Database Configuration
+DB_HOST=127.0.0.1
+DB_USER= USERNAME_HERE
+DB_PASSWORD= PASSWORD_HERE
+DB_NAME=JOB_APP
+
+# For API Authentication
+JWT_SECRET_KEY=KEY_HERE
+```
 
 <!--
 In GitHub Repo About Section:
