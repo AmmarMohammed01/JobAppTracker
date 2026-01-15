@@ -165,9 +165,7 @@ async def job_tracker_add(job_tracker: jobTrackerInfo):
         conn = pool.get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # "send the job data" query here
-        sql = ""
-        # cursor.execute(sql)
+        # Test if data is coming through
         print(job_tracker.companyNameT)
         print(job_tracker.dateAppliedT)
         print(job_tracker.platformT)
@@ -175,6 +173,30 @@ async def job_tracker_add(job_tracker: jobTrackerInfo):
         print(job_tracker.linkT)
         print(job_tracker.usernameT)
         print(job_tracker.passwordT)
+
+        # "send the job data" query here
+        sql = ""
+        '''
+        Check if company exists in database. (since it is foreign key for JOB)
+        If not, add it. Retrieve the CompanyID.        
+        SELECT Company_ID, CompanyName FROM COMPANY WHERE CompanyName == %s; //job_tracker.companyNameT
+
+        INSERT INTO JOB (JobPosition, Platform, Company_ID) VALUES (%s, %s); //job_tracker.jobPositionT, job_tracker.platformT
+
+        Once job is created, retrieve Job_ID to use for APPLIES table. APPLIES connects JOB to POTENTIAL_EMPLOYEE
+        INSERT INTO APPLIES VALUES (%s, %s, %s); //PotEmp_ID: , Job_ID: , DateApplied: job_tracker.dateAppliedT
+
+        Create URL and connect it to Job_ID
+        INSERT INTO URLs VALUES (Primary, %s); //Link: job_tracker.linkT
+
+        API needs to check if "JOB APPLYING ACCOUNT" username and password were sent in as these are optional.
+        INSERT INTO JOB_APPLYING_ACCOUNT VALUES (%s, %s, %s, %s);
+        // JAA_Username: job_tracker.usernameT, JAA_Password: job_tracker.passwordT
+        // PotEmp_ID: , Company_ID:
+        '''
+
+
+        # cursor.execute(sql)
 
         return {}
 
