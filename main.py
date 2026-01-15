@@ -52,10 +52,12 @@ async def read_root():
     return {"Message": "Congrats! This is your first FastAPI!"}
 '''
 
+# Test API: Just see if API is working
 @app.get("/get-message")
 async def read_root():
     return {"Message": "Congrats! This is your first FastAPI!"}
 
+# When creating an account for the first time, check if username is not taken by another user in database
 @app.post("/api/account/username-availability")
 async def accountCheckUsernameAvailable(username: UsernameChecker):
     conn = pool.get_connection()
@@ -75,7 +77,7 @@ async def accountCheckUsernameAvailable(username: UsernameChecker):
         "available": result is None
     }
 
-
+# Create an account given the user selected username and password and store in database
 @app.post("/api/account/create")
 async def accountCreate(account: AccountInfo):
     account_created_success = False
@@ -105,6 +107,7 @@ async def accountCreate(account: AccountInfo):
         "account_created_success": account_created_success
     }
 
+# Sign-in to website using account. Return a sign-in token for authentication
 @app.post("/api/account/signin")
 async def accountSignin(account: AccountInfo):
     try:
@@ -138,9 +141,29 @@ async def accountSignin(account: AccountInfo):
         e.add_note("Error Occured When Signing In")
         raise
 
+# Example API for using authentication
 @app.get("/api/protected-example")
 async def protected_example(current_user=Depends(get_current_user)):
     return {
         "message": "You are authenticated",
         "user": current_user
     }
+
+'''
+# Recieve input from the create_job_tracker page, send the info to the database
+@app.post("/api/jobtracker/submit")
+async def job_tracker_submit():
+    try:
+        conn = pool.get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # "send the job data" query here
+        sql = ""
+        cursor.execute(sql)
+
+        return {}
+
+    except Exception as e:
+        e.add_note("Error Occured When Submitting New Job Tracker")
+        raise
+'''
