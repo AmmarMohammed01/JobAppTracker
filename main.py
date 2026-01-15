@@ -23,6 +23,15 @@ class AccountInfo(BaseModel):
     username: str
     password: str
 
+class jobTrackerInfo(BaseModel):
+    companyNameT: str
+    dateAppliedT: str
+    platformT: str
+    jobPositionT: str
+    linkT: str
+    usernameT: str
+    passwordT: str
+
 load_dotenv()
 
 dbconfig = {
@@ -149,21 +158,26 @@ async def protected_example(current_user=Depends(get_current_user)):
         "user": current_user
     }
 
-'''
-# Recieve input from the create_job_tracker page, send the info to the database
-@app.post("/api/jobtracker/submit")
-async def job_tracker_submit():
+# Recieve input from the add_job_tracker page, send the info to the database
+@app.post("/api/jobtracker/add")
+async def job_tracker_add(job_tracker: jobTrackerInfo):
     try:
         conn = pool.get_connection()
         cursor = conn.cursor(dictionary=True)
 
         # "send the job data" query here
         sql = ""
-        cursor.execute(sql)
+        # cursor.execute(sql)
+        print(job_tracker.companyNameT)
+        print(job_tracker.dateAppliedT)
+        print(job_tracker.platformT)
+        print(job_tracker.jobPositionT)
+        print(job_tracker.linkT)
+        print(job_tracker.usernameT)
+        print(job_tracker.passwordT)
 
         return {}
 
     except Exception as e:
         e.add_note("Error Occured When Submitting New Job Tracker")
         raise
-'''

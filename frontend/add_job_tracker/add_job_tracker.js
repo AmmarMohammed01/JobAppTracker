@@ -20,7 +20,7 @@ const password = document.querySelector('.js-password');
 
 const jsForm = document.querySelector('.js-form');
 jsForm.addEventListener('submit', 
-  (event) => {
+  async (event) => {
     event.preventDefault();
 
     console.log(`Company Name: ${companyName.value}`);
@@ -30,5 +30,43 @@ jsForm.addEventListener('submit',
     console.log(`Link: ${link.value}`);
     console.log(`Username: ${username.value}`);
     console.log(`Password: ${password.value}`);
+
+    //create an object to pass all data through function
+    const newJobTracker = {
+      companyNameT: companyName.value,
+      dateAppliedT: dateApplied.value,
+      platformT: platform.value,
+      jobPositionT: jobPosition.value,
+      linkT: link.value,
+      usernameT: username.value,
+      passwordT: password.value 
+    };
+
+    addJobTracker(newJobTracker);
   }
 );
+
+async function addJobTracker(jobTracker) {
+  console.log(jobTracker);
+  console.log(jobTracker.dateAppliedT)
+  try {
+    const response = await fetch('http://127.0.0.1:8000/api/jobtracker/add', {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        companyNameT: jobTracker.companyNameT,
+        dateAppliedT: jobTracker.dateAppliedT,
+        platformT: jobTracker.platformT,
+        jobPositionT: jobTracker.jobPositionT,
+        linkT: jobTracker.linkT,
+        usernameT: jobTracker.usernameT,
+        passwordT: jobTracker.passwordT
+ 
+      })
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
