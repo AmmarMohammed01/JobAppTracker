@@ -1,7 +1,7 @@
 .venv
 __pycache__
 .$jobapp-db-diagram.drawio.bkp
-notes/hidden
+docs/hidden
 
 .env
 .DS_Store
